@@ -1,0 +1,10 @@
+﻿{
+  "profiles": {
+    "DevSkill.TenantPro.Service": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

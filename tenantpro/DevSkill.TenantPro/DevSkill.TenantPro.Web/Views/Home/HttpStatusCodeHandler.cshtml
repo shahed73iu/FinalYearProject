@@ -1,0 +1,51 @@
+﻿
+@{
+    ViewData["Title"] = "HttpStatusCodeHandler";
+}
+
+
+<!-- Content Wrapper. Contains page content -->
+<div class="card m-4">
+    <!-- Content Header (Page header) -->
+    <section class="content-header card-header">
+        <div class="container">
+            <div class="row mb-2">
+                <div class="col-sm-6 text-warning">
+                    <h1>
+                        @ViewBag.ErrorMessage
+                    </h1>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content card-body">
+        <div class="error-page">
+            <h6 class="headline text-warning">
+            </h6>
+
+            <div class="error-content">
+                <h3><i class="fas fa-exclamation-triangle text-warning"></i> Oops! Page not found.</h3>
+
+                <p>
+                    Sorry! The page you are looking for can't be found.
+
+                    May be you have typed the address incorrectly or used an outdated link.
+
+                    You can go back to Homepage
+                    We could not find the page you were looking for.
+                </p>
+                <p>
+                    you may <a href="/Account/Login">return to Login Page</a>
+
+                </p>
+
+            </div>
+            <!-- /.error-content -->
+        </div>
+        <!-- /.error-page -->
+    </section>
+    <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->

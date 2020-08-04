@@ -1,0 +1,468 @@
+﻿@model DevSkill.TenantPro.Web.Areas.Admin.Models.TenantUpdateModel
+@{
+    ViewData["Title"] = "Edit";
+}
+@section styles
+{
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link href="~/css/bootstrap.css" rel="stylesheet" />
+    <link href="~/admin/plugins/chosen/chosen.min.css" rel="stylesheet" />
+}
+
+@section scripts
+{
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="~/admin/plugins/chosen/chosen.jquery.min.js"></script>
+    <script>
+        $(function () {
+            $("#datepicker1").datepicker();
+            $("#datepicker2").datepicker();
+        });
+    </script>
+   @for (var i = 1; i <= Model.Printings.Count; i++)
+   {
+
+    <script>
+        $(function () {
+               
+         $('#ID'+@i+'Name').chosen();
+                    
+        });
+    </script>
+   }
+
+
+
+
+    @*validation code Start here*@
+    <script>
+        function isValidPhone(PhoneNumber) {
+            var found = PhoneNumber.search(/^(\+{1}\d{2,3}\s?[(]{1}\d{1,3}[)]{1}\s?\d+|\+\d{2,3}\s{1}\d+|\d+){1}[\s|-]?\d+([\s|-]?\d+){1,2}$/);
+            var l = PhoneNumber.length;
+            var a = parseInt(l);
+            if (found > -1) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        function myFunction() {
+            if ($("#Name").val() === "") {
+                $("#TenantName").text("please enter full name!").show().fadeIn(1000);
+                event.preventDefault();
+            }
+            var inputEmail = $("#Email").val();
+            var mailCheck = validateEmail(inputEmail);
+            if (!mailCheck) {
+                $("#CompanyEmail").text("please enter a valid email!").show().fadeIn(1000);
+                event.preventDefault();
+            }
+            function validateEmail(inputEmail) {
+                var re = /^([\w-\.]+)@@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
+                return re.test(String(inputEmail).toLowerCase());
+            }
+            if ($("#Holding").val() === "") {
+                $("#HoldingNumber").text("please enter holding number!").show().fadeIn(1000);
+                event.preventDefault();
+            }
+
+            if ($("#AdvanceArrear").val() === "") {
+                $("#AdvanceRentAmount").text("please enter advance payment!").show().fadeIn(1000);
+                event.preventDefault();
+            }
+            if ($("#Rent").val() === "") {
+                $("#RentAmount").text("please enter rent amount!").show().fadeIn(1000);
+                event.preventDefault();
+            }
+            if ($("#ServiceCharge").val() === "") {
+                $("#ServicingCharge").text("please enter service charge amount!").show().fadeIn(1000);
+                event.preventDefault();
+            }
+            if ($("#WaterBill").val() === "") {
+                $("#WaterBillAmount").text("please enter water bill amount!").show().fadeIn(1000);
+                event.preventDefault();
+            }
+            if ($("#datepicker1").val() === "") {
+                $("#ContractStartingDate").text("please enter contract start date!").show().fadeIn(1000);
+                event.preventDefault();
+            }
+            if ($("#datepicker2").val() === "") {
+                $("#ContractExpiringDate").text("please enter contract expiration date!").show().fadeIn(1000);
+                event.preventDefault();
+            }
+            var inputPhoneNumber = $("#PhoneNumber").val();
+            var phoneCheck = isValidPhone(inputPhoneNumber);
+            if (!phoneCheck) {
+                $("#CompanyPhoneNumber").text("please enter valid phone number").show().fadeIn(1000);
+                event.preventDefault();
+            }
+            if ($("#ContactPersonName").val() === "") {
+                $("#NameOfContactPerson").text("please full name!").show().fadeIn(1000);
+                event.preventDefault();
+            }
+            var inputEmail = $("#Email").val();
+            var mailCheck = validateEmail(inputEmail);
+            if (!mailCheck) {
+                $("#EmailOfContactPerson").text("please enter a valid email!").show().fadeIn(1000);
+                event.preventDefault();
+            }
+            function validateEmail(inputEmail) {
+                var re = /^([\w-\.]+)@@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
+                return re.test(String(inputEmail).toLowerCase());
+            }
+            var inputMobileNumber = $("#ContactPersonContractNumber").val();
+            var MobileCheck = isValidPhone(inputMobileNumber);
+            if (!MobileCheck) {
+                $("#NumberOfContactPersonContract").text("please enter valid mobile number").show().fadeIn(1000);
+                event.preventDefault();
+            }
+            if ($("#payment").val() === null) {
+                $("#TenantPaymentType").text("please select payment type!").show().fadeIn(1000);
+                event.preventDefault();
+            }
+            if ($("#ID1Name").val() == null) {
+                $("#BillType").text("please select bill type!").show().fadeIn(1000);
+                event.preventDefault();
+            }
+        }
+        function chosenCreate() {
+            $(".chosen_select_L").chosen();
+        }
+        function chosenDestroy() {
+             $(".chosen_select_L").chosen('destroy');
+        }
+         @*Start Add , Remove Row Dynamically  *@
+
+
+        @*START Jquery Add row for product Feature*@
+
+       $('#btnAddTripExp').on('click', function () {
+
+        $(".chosen_select_L").chosen('destroy');
+
+        var num = $('.clonedInputTripExp').length,
+
+            newNum = new Number(num + 1),
+            newRow = new Number(num),
+            newElem = $('#entryTripExp' + num).clone().attr('id', 'entryTripExp' + newNum).fadeIn('slow');
+
+        var newIda = $('#entryTripExp' + num).find('.Sl').html(),
+        newId = parseInt(newIda) + 1;
+        newElem.find('.Name').parent().attr('for', 'ID' + newId + 'Name');//Printings[0].Format
+        newElem.find('.Name').attr('id', 'ID' + newId + 'Name').val('').attr('name', 'Printings[' + newIda + '].BillFormat').val('');
+        $('#entryTripExp' + num).after(newElem);
+        $('#entryTripExp' + newNum).focus();
+
+        $('#btnDelTripExp').attr('disabled', false);
+
+           newElem.find('.Sl').html(newNum);
+           $(".chosen_select_L").chosen();
+          
+    });
+
+
+    $(document).on('click', '.btnDelTripExp', function () {
+
+        event.preventDefault();
+
+        var num = $('.clonedInputTripExp').length,
+
+            newNum = new Number(num);
+
+        if (newNum == 1) {
+            $('.btnDelTripExp').attr('disabled', true);
+            alert("Minimum fill one row!!");
+        }
+        else {
+            var tr = $(this).closest('tr');
+            tr.addClass("bg-danger");
+            tr.fadeOut(500, function () {
+                var table = tr.closest('table');
+                tr.remove();
+                updateIndexesExp(table);
+            });
+        }
+
+    });
+        // Update Clond Input fields Indexes
+    function updateIndexesExp(table) {
+
+        table.find("tr:gt(0)").each(function (i, row) {
+            $(row).find("td:first").html(i + 1);
+            var id = i + 1;
+          
+            $(row).find('.Name').attr('name', 'Printings[' + id + '].BillFormat');
+            $(row).attr('id', 'entryTripExp' + id);
+
+            $(row).find('input, select').each(function (j, input) {
+
+                var id = input.name.match(/\d+/);
+                if (id != null && id.length && id.length == 1) {
+                    var attr = $(input).attr("name");
+                    var newName = attr.replace(attr.match(/\d+/), i);
+                    $(input).attr("name", newName);
+                }
+            });
+
+
+        });
+    }
+        @* END Jquery Add row for product Feature*@
+
+
+    @*End  Add , Remove Row Dynamically *@
+    </script>
+    @*validation code end here*@
+
+    }
+@section Notification
+{
+    @await Html.PartialAsync("_Notification", Model.Notification)
+}
+
+<form enctype="multipart/form-data" asp-controller="Tenant" asp-action="Edit" method="post" class="form-horizontal">
+    @Html.AntiForgeryToken()
+    <input type="hidden" value="@Model.Id" name="Id" />
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <label class="control-label col-md-12" style="text-align:center; padding:5px 0;">
+                            Edit Tenant Information
+                        </label>
+                    </div>
+                    <div class="d-inline-block">
+                        <div class="align-content-md-around">
+                            <div class="col-md-6" style="float:left">
+                                <div class="form-group">
+                                    <label asp-for="Name" class="control-label">Tenant Name</label>
+                                    <p id="TenantName" class="text-danger"></p>
+                                    <input value="@Model.Name" name="Name" id="Name" asp-for="Name" class="form-control form-control-sm" placeholder="Please Enter Tenant Name" required />
+                                    <span asp-validation-for="Name" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="ContractStartDate" class="control-label">Contract Start Date</label>
+                                    <p id="ContractStartingDate" class="text-danger"></p>
+                                    <input value="@Model.ContractStartDate" type="text" id="datepicker1" name="ContractStartDate" asp-for="ContractStartDate" class="form-control form-control-sm" placeholder="please give contract signing date" required />
+                                    <span asp-validation-for="ContractStartDate" class="=text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Rent" class="control-label">Rent</label>
+                                    <p id="RentAmount" class="text-danger"></p>
+                                    <input value="@Model.Rent" type="number" name="Rent" id="Rent" asp-for="Rent" class="form-control form-control-sm" placeholder="please give office rent" required />
+                                    <span asp-validation-for="Rent" class="=text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="GasBill" class="control-label">Gas Bill</label>
+                                    <p id="GasBillAmount" class="text-danger"></p>
+                                    <input value="@Model.GasBill" type="number" name="GasBill" id="GasBill" asp-for="GasBill" class="form-control form-control-sm" placeholder="please give Gas Bill" required />
+                                    <span asp-validation-for="GasBill" class=" text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="ServiceCharge" class="control-label">Service Charge</label>
+                                    <p id="ServicingCharge" class="text-danger"></p>
+                                    <input value="@Model.ServiceCharge" type="number" name="ServiceCharge" id="ServiceCharge" asp-for="ServiceCharge" class="form-control form-control-sm" placeholder="please give service charge" required />
+                                    <span asp-validation-for="ServiceCharge" class="=text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Email" class="control-label">Email</label>
+                                    <p id="CompanyEmail" class="text-danger"></p>
+                                    <input value="@Model.Email" type="Email" name="Email" id="Email" asp-for="Email" class="form-control form-control-sm" placeholder="please enter email" />
+                                    <span asp-validation-for="Email" class="=text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6" style="float:left">
+                                <div class="form-group">
+                                    <label asp-for="Holding" class="control-label">Holding</label>
+                                    <p id="HoldingNumber" class="text-danger"></p>
+                                    <input value="@Model.Holding" name="Holding" id="Holding" asp-for="Holding" class="form-control form-control-sm" placeholder="please enter holding number" required />
+                                    <span asp-validation-for="Holding" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="ContractExpirationDate" class="control-label">Contract Expiration Date</label>
+                                    <p id="ContractExpiringDate" class="text-danger"></p>
+                                    <input value="@Model.ContractExpirationDate" type="text" id="datepicker2" name="ContractExpirationDate" asp-for="ContractExpirationDate" class="form-control form-control-sm" placeholder="please give contract expiration date" required />
+
+                                    <span asp-validation-for="ContractExpirationDate" class="=text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="AdvanceArrear" class="control-label">Advance Payment</label>
+                                    <p id="AdvanceRentAmount" class="text-danger"></p>
+                                    <input value="@Model.AdvanceArrear" type="number" name="AdvanceArrear" id="AdvanceArrear" asp-for="AdvanceArrear" class="form-control form-control-sm" placeholder="please give advance payment" required />
+                                    <span asp-validation-for="AdvanceArrear" class="=text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="WaterBill" class="control-label">Water Bill</label>
+                                    <p id="WaterBillAmount" class="text-danger"></p>
+                                    <input value="@Model.WaterBill" type="number" name="WaterBill" id="WaterBill" asp-for="WaterBill" class="form-control form-control-sm" placeholder="please give water Bill" required />
+                                    <span asp-validation-for="WaterBill" class="=text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="PaymentType">Payment Type</label>
+                                    <p id="PaymentType" class="text-danger"></p>
+                                    <select name="PaymentType" class="form-control select2">
+                                        <option selected="selected">@Model.PaymentType</option>
+                                        @foreach (var item in ViewBag.PaymentType)
+                                        {
+                                            @if (item == Model.PaymentType.ToString())
+                                            {
+
+                                            }
+                                            else
+                                            {
+                                                <option value="@item">@item</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="PhoneNumber" class="control-label">Phone Number</label>
+                                    <p id="CompanyPhoneNumber" class="text-danger"></p>
+                                    <input value="@Model.PhoneNumber" name="PhoneNumber" id="PhoneNumber" asp-for="PhoneNumber" class="form-control form-control-sm" placeholder="please give valid phone number" required />
+                                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <label class="control-label col-md-12" style="background-color:beige ; text-align:center; padding:10px 0;">
+                                Bill Printing Format
+                            </label>
+                            <p id="BillType" class="text-danger" align="center"></p>
+                            <div class="col-md-12" style="float:left ; background-color :aliceblue">
+                                <div class="row">
+                                    
+                                    <table class="table table-bordered table-striped table-condensed mb-none" id="tblExpenseCount">
+
+                                        <thead>
+                                            <tr>
+                                                <th>#SL</th>
+                                                <th>Bill Type</th>
+
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        
+                                        <tbody>
+                                           
+
+
+                                            @for (var i = 0; i < Model.Printings.Count; i++)
+                                            {
+
+                                            var entryTripExp = "entryTripExp"+(i+1);
+                                            var serial = i + 1;
+                                            var selectId = "ID" + serial + "Name";
+                                            <tr class="clonedInputTripExp" id=@entryTripExp>
+
+                                                <td class="Sl">@serial</td>
+                                                <td>
+
+                                                    <select id=@selectId name="Printings[@i].BillFormat" class="Name form-control form-control-sm chosen_select_L" multiple style="width: 953px;">
+                                                        <option disabled> Please Select a Bill Type</option>
+
+                                                        @for (var j = 0; j < Model.Printings.ElementAt(i).BillFormat.Length; j++)
+                                                        {
+                                                            var option = Model.Printings.ElementAt(i).BillFormat[j];
+                                                            <option value=@option selected>@option</option>
+
+                                                        }
+                                                       
+                                                        @{ List<string> list = new List<string>();}
+
+                                                        @foreach (var bill in ViewBag.BillType)
+                                                        {
+                                                            list.Add(bill);
+
+                                                        }
+                                                        @foreach (var arrayitem in Model.Printings.ElementAt(i).BillFormat)
+                                                        {
+                                                            list.Remove(arrayitem);
+                                                        }
+                                                        @foreach (var item in list)
+                                                        {
+
+                                                            <option value=@item>@item</option>
+
+                                                        }
+                                                    </select>
+                                                </td>
+
+
+
+                                                <td class="text-center">
+                                                    <a href="javascript:void(0)" class="btnDelTripExp" style="cursor: pointer;">
+                                                        X
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                           
+
+
+                                        }
+                                            
+                                        </tbody>
+                                    </table>
+                                </div>
+                               
+                                <div class="row">
+                                    <div class="col-md-4">
+
+                                    </div>
+                                    <div class="col-md-4">
+
+                                    </div>
+                                    <div class="col-md-4" style="text-align:right">
+                                        <button class="btn btn-primary input-sm" type="button" name="btnAddTripExp" id="btnAddTripExp">
+                                            <i class="fa fa-plus"></i> Add More Rows
+                                        </button>
+
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <label class="control-label col-md-12" style="background-color:beige ; text-align:center; padding:10px 0;">
+                                Edit Contact Person Information
+                            </label>
+
+                            @* contact information portion start *@
+                            <div class="col-md-6" style="float:left ; background-color :aliceblue">
+                                <div class="form-group">
+                                    <label asp-for="ContactPersonName" class="control-label">Full Name</label>
+                                    <p id="NameOfContactPerson" class="text-danger"></p>
+                                    <input value="@Model.ContactPersonName" type="text" name="ContactPersonName" id="ContactPersonName" asp-for="ContactPersonName" class="form-control form-control-sm" placeholder="please give ContactPersonName" required />
+                                    <span asp-validation-for="ContactPersonName" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="ContactPersonContractNumber" class="control-label">Mobile Number</label>
+                                    <p id="NumberOfContactPersonContract" class="text-danger"></p>
+                                    <input value="@Model.ContactPersonContractNumber" type="text" name="ContactPersonContractNumber" id="ContactPersonContractNumber" asp-for="ContactPersonContractNumber" class="form-control form-control-sm" placeholder="please give contract person mobile number" required />
+                                    <span asp-validation-for="ContactPersonContractNumber" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6" style="float:left ; background-color :aliceblue">
+                                <div class="form-group">
+                                    <label asp-for="ContactPersonEmail" class="control-label">Email</label>
+                                    <p id="EmailOfContactPerson" class="text-danger"></p>
+                                    <input value="@Model.ContactPersonEmail" type="Email" name="ContactPersonEmail" id="ContactPersonEmail" asp-for="ContactPersonEmail" class="form-control form-control-sm" placeholder="please give contract person email" required />
+                                    <span asp-validation-for="ContactPersonEmail" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <div class="float-left" style="margin-top : 43px  ; width:100%; padding-bottom:14px;">
+                                        <button type="submit" class="btn btn-outline-success w-100" id="" onclick="myFunction()">Submit</button>
+
+                                    </div>
+                                </div>
+                            </div>
+                            @* contact information portion end *@
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+

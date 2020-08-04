@@ -1,0 +1,73 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+}
+
+@section styles
+{
+
+}
+
+@section scripts
+{
+
+}
+
+<div class="container-fluid">
+    <!-- Small boxes (Stat box) -->
+    <div class="row">
+        <div class="col-lg-4 col-6">
+            <!-- small box -->
+            <div class="small-box bg-warning">
+                <div class="inner">
+                    <p>Total Tenants</p>
+                    <h3>@ViewBag.TenantCount</h3>
+
+                </div>
+                <div class="icon">
+                    <i class="ion ion-person-add"></i>
+                    <i class="icon-question"></i>
+                </div>
+                <a href="/Admin/Tenant/Index" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+        <!-- ./col -->
+        <div class="col-lg-4 col-6">
+            <!-- small box -->
+            <div class="small-box bg-success">
+                <div class="inner">
+                    <h6>Desco Bill Last Entered</h6>
+
+                    @if (@ViewBag.LastDescoBill != null)
+                    {
+                        <p>@ViewBag.LastDescoBill.Month - @ViewBag.LastDescoBill.Year</p>
+                        <h6>@ViewBag.LastDescoBill.DescoBillOfThisMonth TK</h6>
+                    }
+                    else
+                    {
+                        <p>No Desco Bill Added<br /> in last month</p>
+                    }
+                </div>
+                <div class="icon">
+                    <i class="ion ion-stats-bars"></i>
+                </div>
+                <a href="/Admin/Bill/Index" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+        <!-- ./col -->
+        <div class="col-lg-4 col-6">
+            <!-- small box -->
+            <div class="small-box bg-info">
+                <div class="inner">
+                    <p>Total Documents Uploaded</p>
+                    <h3>@ViewBag.DocumentCount</h3>
+                </div>
+                <div class="icon">
+                    <i class="ion ion-bag"></i>
+                </div>
+                <a href="#" class="small-box-footer">Go to Tenant For View Details <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+    </div>
+    <!-- /.row -->
+</div><!-- /.container-fluid -->

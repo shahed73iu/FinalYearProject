@@ -1,0 +1,300 @@
+﻿@model DevSkill.TenantPro.Web.Areas.Admin.Models.TenantViewModel;
+@using DevSkill.TenantPro.Billing.Services;
+@inject IReadingService _readingService;
+
+@{
+    ViewData["Title"] = "GenerateFinalBill";
+}
+
+<h1>GenerateFinalBill</h1>
+
+@section scripts
+{
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+           document.title = "@Model.Tenant.Name _ @Model.Tenant.Holding _ @DateTime.Now.ToString("MMMM, yyyy")";
+           window.print();
+        });
+
+
+    </script>
+}
+
+
+@{var c = 0;
+    //decimal total = 0;
+}
+
+
+@foreach (var Payment in Model.Payments)
+{
+    decimal total = 0;
+    <div class="wrapper" id="MyDiv">
+        <section class="invoice card">
+            <div class="row">
+                <div class="col-sm-12">
+                    <small class="float-right">Printing Time : @DateTime.Now</small>
+                </div>
+            </div>
+            <div class="row invoice-info">
+                <div class="col-sm-4 m-3 invoice-col">
+                    <br /><br />
+                    <h2>
+                        <i class="fas fa-globe"></i> Razia Plaza
+                    </h2>
+                    <strong></strong>
+                    <p class="pl-4">
+                        184, Senpara Parbata,<br>
+                        Mirpur, Dhaka  - 1216<br>
+                        razia.plaza@gmail.com<br>
+                    </p>
+                </div>
+                <!-- /.col -->
+                <div class="col-sm-3 invoice-col">
+
+                </div>
+                <!-- /.col -->
+                <div class="col-sm-4 float-right invoice-col">
+                    <br>
+                    <br>
+                    <h3><b>Tenant Information</b></h3>
+                    <b>
+                        <strong>
+                            Name : @Model.Tenant.Name  <br>
+                            Holding : @Model.Tenant.Holding
+                        </strong>
+                    </b><br />
+                    <hr />
+                    <b><i class="fa fa-book-reader">  Contact Person : </i></b>
+                    @foreach (var item in Model.Tenant.ContactPersons)
+                    {
+                        <h6 class="pl-4">
+                            Name : @item.Name
+                        </h6>
+                        <h6 class="pl-4">
+                            Mobile Number :  @item.ContractNumber
+                        </h6>
+                    }
+                </div>
+                <!-- /.col -->
+            </div>
+            <!-- Table row -->
+            <div class="row card-body">
+                <div class="col-12 table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Serial#</th>
+                                <th>Bill-Type</th>
+                                <th>Month - Year</th>
+                                <th>Item</th>
+                                <th>Bill Amount</th>
+                            </tr>
+                        </thead>
+
+
+                        <tbody>
+                            @{var x = 0;}
+
+
+
+                            @if (Payment.Format.Contains("ElectricityBill") && _readingService.GetReadingOfTenant(Model.Tenant.Id, Payment.FinalBillDate.AddMonths(-1)) != null)
+                            {
+                                <tr>
+                                    <td>@{x++;}<p>@x</p></td>
+                                    <td>Electricity Bill</td>
+                                    <td> @Payment.FinalBillDate.AddMonths(-1).ToString("MMMM"),@Payment.FinalBillDate.Year </td>
+                                    <td>
+                                        <div class="list-group">
+                                            Previous Reading : @_readingService.GetReadingOfTenant(Model.Tenant.Id, Payment.FinalBillDate.AddMonths(-1)).PresentReading <br />
+                                            Present Reading : @_readingService.GetReadingOfTenant(Model.Tenant.Id, Payment.FinalBillDate.AddMonths(-1)).PresentReading <br />
+                                            Net Unit : @_readingService.GetReadingOfTenant(Model.Tenant.Id, Payment.FinalBillDate.AddMonths(-1)).NetUnit.ToString("0.00") <br />
+                                            Per Unit Price : @_readingService.GetReadingOfTenant(Model.Tenant.Id, Payment.FinalBillDate.AddMonths(-1)).PerUnitPrice.ToString("0.00") <br />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @Model.Reading.TotalBillofThisMonth.ToString("0.00")
+                                        @{total = total + Model.Reading.TotalBillofThisMonth;}
+                                    </td>
+                                </tr>
+                            }
+
+                            @if (Payment.Format.Contains("Rent"))
+                            {
+                                <tr>
+                                    <td>@{x++;}<p>@x</p></td>
+                                    <td>House Rent</td>
+                                    <td>
+                                        @if (Model.Tenant.PaymentType.ToString() == "Prepaid")
+                                        {
+                                            @Payment.FinalBillDate.ToString("MMMM")<span>,</span> @Payment.FinalBillDate.Year
+                                        }
+                                        else
+                                        {
+                                            @Payment.FinalBillDate.AddMonths(-1).ToString("MMMM")<span>,</span> @Payment.FinalBillDate.Year
+                                        }
+                                    </td>
+
+                                    <td></td>
+                                    <td>
+                                        @Model.Tenant.Rent Tk
+                                        @{total = total + Model.Tenant.Rent;}
+                                    </td>
+                                </tr>
+                            }
+                            @if (Payment.Format.Contains("WaterBill"))
+                            {
+                                <tr>
+                                    <td>@{x++;}<p>@x</p></td>
+                                    <td>Water-Bill </td>
+                                    <td>
+                                        @if (Model.Tenant.PaymentType.ToString() == "Prepaid")
+                                        {
+                                            @Payment.FinalBillDate.ToString("MMMM")<span>,</span> @Payment.FinalBillDate.Year
+                                        }
+                                        else
+                                        {
+                                            @Payment.FinalBillDate.AddMonths(-1).ToString("MMMM")<span>,</span> @Payment.FinalBillDate.Year
+                                        }
+                                    </td>
+
+                                    <td>
+                                    </td>
+                                    <td>
+                                        @Model.Tenant.WaterBill TK <br />
+                                        @{total = total + Model.Tenant.WaterBill;}
+                                    </td>
+                                </tr>
+                            }
+                            @if (Payment.Format.Contains("ServiceCharge"))
+                            {
+                                <tr>
+                                    <td>@{x++;}<p>@x</p></td>
+                                    <td>Service Charge</td>
+                                    <td>
+                                        @if (Model.Tenant.PaymentType.ToString() == "Prepaid")
+                                        {
+                                            @Payment.FinalBillDate.ToString("MMMM")<span>,</span> @Payment.FinalBillDate.Year
+                                        }
+                                        else
+                                        {
+                                            @Payment.FinalBillDate.AddMonths(-1).ToString("MMMM")<span>,</span> @Payment.FinalBillDate.Year
+                                        }
+                                    </td>
+
+                                    <td></td>
+                                    <td>
+                                        @Model.Tenant.ServiceCharge Tk
+                                        @{total = total + Model.Tenant.ServiceCharge;}
+                                    </td>
+                                </tr>
+                            }
+                            @if (Payment.Format.Contains("GasBill"))
+                            {
+                                <tr>
+                                    <td>@{x++;}<p>@x</p></td>
+                                    <td>Gas Bill </td>
+                                    <td>
+                                        @Payment.FinalBillDate.AddMonths(-1).ToString("MMMM"),@Payment.FinalBillDate.Year
+                                    </td>
+
+                                    <td> </td>
+                                    <td>
+                                        @Model.Tenant.GasBill Tk
+                                        @{total = total + Model.Tenant.GasBill;}
+                                    </td>
+                                </tr>
+                            }
+
+
+
+                        </tbody>
+
+
+                        <tfoot>
+                            <tr>
+                                <td>
+                                </td>
+                                <td></td>
+                                <td></td>
+                                <td align="right"><font size="5">Total :</font></td>
+                                <td> <font size="5">@total.ToString("0.00") Tk</font></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <!-- /.col -->
+            </div>
+            <!-- /.row -->
+            <!-- /.col -->
+
+        </section>
+    </div>
+
+    total = 0;
+
+
+    <div class="row card-body">
+        <div class="col-12 table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Format</th>
+                        <th>Date</th>
+                        <th>Payment-Method</th>
+                        <th>Amount</th>
+                        <th>Due</th>
+                        <th>Documents</th>
+                    </tr>
+                </thead>
+
+
+                <tbody>
+
+
+
+                    <tr>
+                        <td>@Payment.Format</td>
+                        <td> @Payment.FinalBillDate.ToString("MMMM"),@Payment.FinalBillDate.Year</td>
+                        <td>
+                            @Payment.PaymentMethod
+                        </td>
+
+                        <td>
+                            @Payment.PaymentAmount Tk
+                        </td>
+                        <th>
+                            @Payment.DueAmount Tk
+                        </th>
+                        <td>
+                            @Payment.DocumentsDetails
+                        </td>
+                    </tr>
+
+
+
+
+                </tbody>
+
+
+                <tfoot>
+                    <tr>
+                        <td>
+                        </td>
+                        <td></td>
+                        <td></td>
+                        <td align="right">@*<font size="5">Total :</font>*@</td>
+                        <td> <font size="5">@*@total.ToString("0.00") Tk*@</font></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        <!-- /.col -->
+    </div>
+    @if (c < Model.Payments.Count - 1)
+    {<p style="page-break-after: always"></p>}
+
+    { c = c + 1; }
+    total = 0;
+}

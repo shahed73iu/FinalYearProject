@@ -1,0 +1,402 @@
+﻿
+@model DevSkill.TenantPro.Web.Areas.Admin.Models.ReadingUpdateModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    ViewData["Title"] = "Add Reading";
+}
+
+@section styles
+{
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+    <link href="~/css/bootstrap.css" rel="stylesheet" />
+   
+}
+
+
+@section notification
+{
+    @await Html.PartialAsync("_Notification", Model.Notification)
+}
+
+@section scripts{
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script>
+        function myFunction() {
+            var i;
+            for (i = 1; i <= @Model.TenantList.Count; i++) {
+
+
+
+                //if ($("#ReadingTakenDate".concat(i)).val() === "") {
+                //    $("#ReadingTakenDateText".concat(i)).text("please select a date!").show().fadeIn(1000);
+                //    event.preventDefault();
+                //}
+                //if ($("#PreviousReading".concat(i)).val() === "") {
+                //    $("#PreviousReadingText".concat(i)).text("please give valid previous reading!").show().fadeIn(1000);
+                //    event.preventDefault();
+                //}
+                //if ($("#PresentReading".concat(i)).val() === "") {
+                //    $("#PresentReadingText".concat(i)).text("please give valid present reading!").show().fadeIn(1000);
+                //    event.preventDefault();
+                //}
+
+                var present = $("#PresentReading".concat(i)).val();
+                var previous = $("#PreviousReading".concat(i)).val();
+                
+                
+                var a = parseInt(present);
+                var b = parseInt(previous);
+                if (a <= b) {
+                    $("#PresentReadingText".concat(i)).text("please give valid present reading!").show().fadeIn(1000);
+                    event.preventDefault();
+                }
+                //if (present != "" && previous=="") {
+                //     $("#PreviousReadingText".concat(i)).text("please give valid previous reading!").show().fadeIn(1000);
+                //     event.preventDefault();
+                //}
+                //if (present == "" && previous != "") {
+                //     //alert(("#PresentReading".concat(i)));
+                //     $("#PresentReadingText".concat(i)).text("please give valid present reading!").show().fadeIn(1000);
+                //     event.preventDefault();
+                //}
+            }
+        }
+         $("#addReading").click(function () {
+
+            $("#myform").submit();
+         });
+         $("#bill").click(function () {
+
+            $("#GenerateBill").submit();
+        });
+    </script>
+
+    <script>
+
+        document.body.addEventListener("keypress", function (e) {  //bind event to the document
+            var targ = e.target;  //get what was clicked on
+            var id = targ.id;  //grab the id
+
+            if (id.toString().includes("PreviousReading")) {
+                var text = id.toString().replace("PreviousReading", "#PreviousReadingText")
+
+                $(text).hide();
+
+            }
+            if (id.toString().includes("PresentReading")) {
+                var text = id.toString().replace("PresentReading", "#PresentReadingText")
+
+                $(text).hide();
+            }
+
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            //   $("select.tenant").change(function () {
+
+            $("#ReadingTakenDate").change(function () {
+                var dateTime = $(this).val();
+                var tenantId = $("select.tenant").val();
+                var obj = {
+
+                    time: dateTime,
+
+                };
+                var input = document.getElementsByClassName("test");
+                for (i = 0; i < input.length; i++) {
+                        input[i].value = "";
+                        input[i].readOnly = false;
+                                //var text = input[i].id.toString().replace("PreviousReading", "#PreviousReadingText")
+
+                                //  $(text).val();
+
+                }
+                  var input = document.getElementsByClassName("presentReading");
+                  for (i = 0; i < input.length; i++) {
+                         input[i].value = "";
+                         input[i].disabled = false;
+                               
+
+                  }
+                document.getElementById("BillPrint").value = dateTime;
+                var inputdate = document.getElementsByClassName('date');
+                var monthYear = document.getElementsByClassName('monthYear');
+                for (i = 0; i < inputdate.length; i++) {
+                    inputdate[i].value = i;
+                    inputdate[i].readOnly = true;
+                    var text = inputdate[i].id.toString().replace("date", "#date")
+
+                    $(text).val(dateTime);
+                }
+
+                $.ajax({
+                    url: 'ReturnData',
+                    dataType: "json",
+                    data: obj,
+                    success: function (data) {
+                        if (data == "0") {
+                            var input = document.getElementsByClassName("test");
+                            for (i = 0; i < input.length; i++) {
+                                input[i].value = "";
+                                input[i].readOnly = false;
+                                //var text = input[i].id.toString().replace("PreviousReading", "#PreviousReadingText")
+
+                                //  $(text).val();
+
+                            }
+
+
+
+                        } else {
+                            var arr = JSON.parse(data);
+                            for (var i = 0; i < arr.length; i++) {
+                                // alert(arr.length);
+                                // document.write("<br>");
+                                $(arr[i][0]).val(arr[i][1]);
+                                var id = arr[i][0].replace("#PreviousReading", "PreviousReading")
+                                document.getElementById(id).readOnly = true;
+                            }
+                        }
+                    },
+
+                    statusCode: {
+                        404: function (content) { alert('cannot find resource'); },
+                        500: function (content) { alert('internal server error'); }
+                    },
+                    error: function (req, status, errorObj) {
+
+                    }
+                });
+                  $.ajax({
+                    url: 'GetPresentReading',
+                    dataType: "json",
+                    data: obj,
+                    success: function (data) {
+                        if (data == "0") {
+                           
+                             var input = document.getElementsByClassName("presentReading");
+                            for (i = 0; i < input.length; i++) {
+                                input[i].value = "";
+                                input[i].disabled = false;
+                                //var text = input[i].id.toString().replace("PreviousReading", "#PreviousReadingText")
+
+                                //  $(text).val();
+
+                            }
+
+
+                        } else {
+                            var arr = JSON.parse(data);
+                            for (var i = 0; i < arr.length; i++) {
+                                // alert(arr.length);
+                                // document.write("<br>");
+                                $(arr[i][0]).val(arr[i][1]);
+                                var id = arr[i][0].replace("#PresentReading", "PresentReading")
+                                document.getElementById(id).disabled = true;
+                                $(arr[i][2]).val(arr[i][3]);
+                                var id = arr[i][2].replace("#PreviousReading", "PreviousReading")
+                                document.getElementById(id).readOnly = true;
+                            }
+                        }
+                    },
+
+                    statusCode: {
+                        404: function (content) { alert('cannot find resource'); },
+                        500: function (content) { alert('internal server error'); }
+                    },
+                    error: function (req, status, errorObj) {
+
+                    }
+                });
+               
+            });
+
+        });
+        //  });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $("select.tenant").change(function () {
+                var tenantId = $(this).val();
+                var time = $('#ReadingTakenDate').val();
+                var obj = {
+
+                    tenantId: tenantId,
+                    time: time,
+                };
+                $.ajax({
+                    url: 'data',
+                    dataType: "json",
+                    data: obj,
+                    success: function (data) {
+                        if (data == "0") {
+                            $('#ReadingTakenDate').prop('disabled', false);
+                            $('#PreviousReading').val("");
+                            $('#PreviousReading').prop('disabled', false);
+                        } else {
+
+                            $('#PreviousReading').val(data);
+                            $('#PreviousReading').prop('disabled', 'disabled');
+                            $('#ReadingTakenDate').prop('disabled', false);
+                            $("#PreviousReadingText").hide();
+                        }
+                    },
+
+                    statusCode: {
+                        404: function (content) { alert('cannot find resource'); },
+                        500: function (content) { alert('internal server error'); }
+                    },
+                    error: function (req, status, errorObj) {
+
+                    }
+                });
+            });
+        });
+    </script>
+
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+        $(function () {
+            $("#ReadingTakenDate").datepicker();
+
+        });
+    </script>
+
+}
+
+
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- left column -->
+        <div class="col-md-12">
+            @*<div class="form-group">
+                    <label asp-for="ReadingTakenDate" class="control-label readingDate">Reading Taken Date</label>
+                    <p id="ReadingTakenDateText" class="text-danger"></p>
+                    <input type="text" name="ReadingTakenDate" id="ReadingTakenDate" asp-for="ReadingTakenDate" class="form-control form-control-sm" value=@Model.ReadingTakenDate placeholder="please give contract signing date" required />
+                    <span asp-validation-for="ReadingTakenDate" class="=text-danger"></span>
+
+                </div>*@
+            <!-- general form elements -->
+            <div class="card card-primary">
+                <div class="card-header">
+                    <h3 class="card-title">Add a Reading</h3>
+                </div>
+
+                <!-- /.card-header -->
+                <form role="form" id="myform" action="~/admin/Reading/add" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <!-- Table row -->
+                    @*<div class="row card-body">
+            <div class="col-12 table-responsive">*@
+                    <div class="form-group">
+                        <div class="row m-4">
+                            <div class="col-md-4" style="text-align:right;">
+                                <label asp-for="ReadingTakenDate" class="control-label readingDate">Reading Taken Date</label>
+                                <p id="ReadingTakenDateText" class="text-danger"></p>
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="ReadingTakenDate" id="ReadingTakenDate" asp-for="ReadingTakenDate" class="form-control form-control-sm" value=@Model.ReadingTakenDate placeholder="please give contract signing date" required />
+                                <span asp-validation-for="ReadingTakenDate" class="=text-danger"></span>
+                            </div>
+                            <div class="col-md-4"></div>
+                        </div>
+                    </div>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Tenant Name</th>
+                                @*<th>Month-Year</th>*@
+                                <th>Present Reading</th>
+                                <th>Previous Reading</th>
+                                @*<th>Day OffSet</th>
+                        <th>Net Unit</th>
+                        <th>Per Unit Price</th>
+                        <th>Bill</th>*@
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                int x = 1;
+                            }
+                            @for (int i = 0; i < Model.TenantList.Count; i++)
+                            {
+
+                                <tr>
+                                    <td>
+                                        <input name="ReadingList[@(i)].TenantId" value=@Model.TenantList.ElementAt(i).Id hidden />
+                                        <input name="ReadingList[@(i)].ReadingTakenDate" id="date@(x)" class="date" value=@Model.ReadingTakenDate hidden />
+                                        <input name="ReadingList[@(i)].MonthYear" id="monthyear@(x)" class="monthyear" value=@Model.ReadingTakenDate.AddMonths(-1) hidden />
+                                    </td>
+                                    <td>@Model.TenantList.ElementAt(i).Name</td>
+
+                                    <td style="width:100px;">
+                                        <div class="form-group">
+
+                                            <p id="PresentReadingText@(@x)" class="text-danger"></p>
+
+                                            <input type="number" class="form-control presentReading" name="ReadingList[@(i)].PresentReading" id="PresentReading@(Model.TenantList.ElementAt(i).Id)" placeholder="Enter present reading">
+
+                                            <p id="demo4" class="text-danger"></p>
+                                        </div>
+                                    </td>
+                                    <td style="width:100px;">
+                                        <div class="form-group">
+
+                                            <p id="PreviousReadingText@(@x)" class="text-danger"></p>
+
+                                            <input type="number" class="form-control test" name="ReadingList[@(i)].PreviousReading" id="PreviousReading@(Model.TenantList.ElementAt(i).Id)" placeholder="Enter previous reading" re>
+                                            <span asp-validation-for="PreviousReading" class="text-danger"></span>
+                                        </div>
+                                    </td>
+
+
+                                </tr>
+                                x = x + 1;
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td> 
+                             
+                                    <input type="submit" class="btn-success" form="myform" style="width:500px;" onclick="myFunction()" value="Add" />                                                                                                        
+                                </td>
+
+                                <td>
+                                    <input type="submit" class="btn-info" form="GenerateBill" style="width:500px;" value="Print" />
+                                </td>
+                                
+                            </tr>
+                        </tfoot>
+
+                    </table>
+                    @*</div>
+                 /.col
+            </div>*@
+                    <!-- /.row -->
+                    <!-- /.col -->
+
+                </form>
+                <form role="form" id="GenerateBill" action="~/admin/Reading/GenerateBill" method="post">
+                    @Html.AntiForgeryToken()
+                    <input id="BillPrint" name="ReadingTakenDate" value="@Model.ReadingTakenDate" hidden />
+
+                </form>
+
+
+            </div>
+            <!-- /.card -->
+
+        </div>
+        <!--/.col (left) -->
+    </div>
+</div>

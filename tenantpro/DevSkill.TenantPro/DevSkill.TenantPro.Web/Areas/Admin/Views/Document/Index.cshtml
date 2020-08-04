@@ -1,0 +1,140 @@
+﻿@model DevSkill.TenantPro.Web.Areas.Admin.Models.DocumentViewModel
+@{
+    ViewData["Title"] = "Document Archive Index";
+}
+
+@section styles
+{
+    <!-- DataTables -->
+    <link rel="stylesheet" href="/admin/plugins/datatables-bs4/css/dataTables.bootstrap4.css">
+}
+
+@section scripts
+{
+    <!-- DataTables -->
+    <script src="/admin/plugins/datatables/jquery.dataTables.js"></script>
+    <script src="/admin/plugins/datatables-bs4/js/dataTables.bootstrap4.js"></script>
+
+    <script>
+        function openTab(th)
+            {
+                window.open(th.name,'_blank');
+            }
+        $(function () {
+            $('#documentDatatable').DataTable({
+                "processing": true,
+                "serverSide": true,
+                "ajax": "/Admin/Document/GetDocuments",
+                "columnDefs": [
+                    {
+                        
+                        "orderable": false,
+                        "targets": 2,
+                        render: function (data, type, row) {
+                            var extension = row[2].split('.').pop();
+                            var fileExtension = ['jpeg', 'jpg', 'png'];
+
+                            if (fileExtension.includes(extension)) {
+                                return "<img src='/upload/" + row[2] + "' style='height:100px; width:200px'>";
+                            }
+                            else if (extension === 'pdf') {
+                                return `<button type="submit" class="btn btn-light btn-sm" "'>
+                                        <i class="fas fa fa-download">
+                                        </i>
+                                        <a onClick="openTab(this)" href="#" name="/upload/`+ row[2] + `">
+                                        Download PDF </a>
+                                    </button >
+                                `;
+                            }
+                            else
+                                return "no file found";
+                        }
+                    },
+                    {
+                        "orderable": false,
+                        "targets": 3,
+                        "render": function (data, type, row) {
+                            return `
+                                    <button type="submit" class="btn btn-danger btn-sm show-bs-modal" href="#" data-id='${data}' value='${data}'>
+                                        <i class="fas fa-trash">
+                                        </i>
+                                        Delete
+                                    </button>`;
+                        }
+                    }
+                ]
+            });
+        });
+
+
+
+        $('#documentDatatable').on('click', '.show-bs-modal', function (event) {
+            var id = $(this).data("id");
+            var modal = $("#modal-default");
+            modal.find('.modal-body p').text('Are you sure you want to delete this record?')
+            $("#deleteId").val(id);
+            modal.modal('show');
+        });
+
+        $("#deleteButton").click(function () {
+            $("#deleteForm").submit();
+        });
+    </script>
+}
+
+
+
+<div class="row">
+    <div class="col-12">
+
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Tenant details View table</h3>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+                <table id="documentDatatable" class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Tenant Name</th>
+                            <th>Document Type</th>
+                            <th>Documents</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <!-- /.card-body -->
+        </div>
+        <!-- /.card -->
+    </div>
+    <!-- /.col -->
+</div>
+<!-- /.row -->
+
+<div class="modal fade" id="modal-default">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Delete</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>One fine body&hellip;</p>
+                <form id="deleteForm" action="/Admin/Document/Delete" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="deleteId" value="" name="id" />
+                </form>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" id="deleteButton" class="btn btn-danger">Yes, Delete!</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->

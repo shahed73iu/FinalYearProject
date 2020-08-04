@@ -1,0 +1,124 @@
+﻿@model DevSkill.TenantPro.Web.Areas.Admin.Models.BillUpdateModel
+
+@{
+    ViewData["Title"] = "Billing Insert";
+}
+
+@section notification
+{
+    @await Html.PartialAsync("_Notification", Model.Notification)
+}
+
+@section scripts
+{
+    <script>
+
+        $(document).ready(function () {
+                
+                $("select#Month").change(function () {
+                    var selectedMonth = $(this).val();
+                    var selectedYear = $("select#Year").val();
+
+                    var parameter = {
+                        month: selectedMonth,
+                        year:  selectedYear,
+                    };
+
+
+                     $.ajax({
+                        url: 'GetTotalUnit',
+                         dataType: "json",
+                         data: parameter,
+                        success: function (data)
+                        {
+                            if (data == "0") {
+                                $('.totalUnitPrice').removeAttr("hidden");
+                            }
+                            else {
+                                $('.totalUnitPrice').hide();
+                            }
+                        },
+
+                      statusCode : {
+                        404: function(content) { alert('cannot find resource'); },
+                        500: function(content) { alert('internal server error'); }
+                      },
+                      error: function(req, status, errorObj) {
+
+                      }
+                   });
+                });
+            });
+
+        function isNullOrWhiteSpace(str){
+                return str === null || str.match(/^ *$/) !== null;
+        }
+
+        function myFunction() {
+            if ($("select#Month").val() === "") {
+                $("#validmonth").text("please give a month!").show().fadeIn(1000);
+                event.preventDefault();
+            }
+            if ($("#DescoBillOfThisMonth").val()==="") {
+                $("#validBill").text("please Enter Desco Bill Of this month").show().fadeIn(1000);
+                event.preventDefault();
+            }
+        }
+    </script>
+}
+
+
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- left column -->
+        <div class="col-md-6">
+            <!-- general form elements -->
+            <div class="card card-info">
+                <div class="card-header">
+                    <h3 class="card-title">Add a Billing</h3>
+                </div>
+                <!-- /.card-header -->
+                <form role="form" id="myform" action="~/Admin/Bill/Add" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label asp-for="Month" class="control-label">Month Name </label>
+                            <p id="validmonth" class="text-danger"></p>
+                            <select id="Month" name="Month" class="form-control form-control-sm" style="width: 100%;">
+                                <option disabled selected value=""> Please Select a Month </option>
+                                @foreach (var item in ViewBag.Months)
+                                {
+                                    <option value="@item">@item</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Year" class="control-label">Year </label>
+                            <select id="Year" name="Year" class="form-control form-control-sm" style="width: 100%;">
+                                <option  selected value="@DateTime.Now.Year"> @DateTime.Now.Year </option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="DescoBillOfThisMonth">Enter Desco Bill Of This Month</label>
+                            <p id="validBill" class="text-danger"></p>
+                            <input type="text" class="form-control" name="DescoBillOfThisMonth" id="DescoBillOfThisMonth" placeholder="Enter Desco Bill">
+                            <span asp-validation-for="DescoBillOfThisMonth" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group totalUnitPrice" hidden>
+                            <label for="TotalUnitLocal">Total Net Unit Local </label>
+                            <input type="number" class="form-control" name="TotalUnitLocal" id="TotalUnitLocal" placeholder="Enter Total Unit Local">
+                        </div>
+                    </div>
+
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-primary" id="test" onclick="myFunction()">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

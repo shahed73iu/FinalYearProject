@@ -1,0 +1,79 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>aspnet-DevSkill.TenantPro.Web-236BEA72-FEB6-41BC-9225-83D70D7976D9</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Areas\Admin\Data\**" />
+    <Compile Remove="Areas\Identity\Pages\Account\**" />
+    <Content Remove="Areas\Admin\Data\**" />
+    <Content Remove="Areas\Identity\Pages\Account\**" />
+    <EmbeddedResource Remove="Areas\Admin\Data\**" />
+    <EmbeddedResource Remove="Areas\Identity\Pages\Account\**" />
+    <None Remove="Areas\Admin\Data\**" />
+    <None Remove="Areas\Identity\Pages\Account\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Migrations\20200422120105_TenantUpdate.cs" />
+    <Compile Remove="Migrations\20200422120105_TenantUpdate.Designer.cs" />
+    <Compile Remove="Migrations\20200422131604_TenantUpdate2.cs" />
+    <Compile Remove="Migrations\20200422131604_TenantUpdate2.Designer.cs" />
+    <Compile Remove="Migrations\20200423134852_UpdatePrinting.cs" />
+    <Compile Remove="Migrations\20200423134852_UpdatePrinting.Designer.cs" />
+    <Compile Remove="Migrations\20200423142314_UpdatePrinting.cs" />
+    <Compile Remove="Migrations\20200423142314_UpdatePrinting.Designer.cs" />
+    <Compile Remove="Migrations\20200423142732_UpdatePrintingEntity.cs" />
+    <Compile Remove="Migrations\20200423142732_UpdatePrintingEntity.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Areas\Identity\Pages\_ValidationScriptsPartial.cshtml" />
+    <Content Remove="Areas\Identity\Pages\_ViewImports.cshtml" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <PackageReference Include="Autofac" Version="5.1.2" />
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="6.0.0" />
+    <PackageReference Include="DevSkill.Data" Version="1.0.4" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="3.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="3.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.1.0-preview1.19506.1" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Serilog.AspNetCore" Version="3.2.0" />
+    <PackageReference Include="Serilog.Sinks.Email" Version="2.3.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="4.1.0" />
+    <PackageReference Include="Serilog.Sinks.MSSqlServer" Version="5.1.4" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\DevSkill.TenantPro.Billing\DevSkill.TenantPro.Billing.csproj" />
+    <ProjectReference Include="..\DevSkill.TenantPro.Core\DevSkill.TenantPro.Core.csproj" />
+    <ProjectReference Include="..\DevSkill.TenantPro.Tenantship\DevSkill.TenantPro.Tenantship.csproj" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Folder Include="Areas\Identity\Pages\Account\" />
+    <Folder Include="wwwroot\upload\" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <None Include="wwwroot\lib\jquery_MonthPicker\jquery-1.11.1.js" />
+    <None Include="wwwroot\lib\jquery_MonthPicker\jquery.monthpicker.js" />
+  </ItemGroup>
+
+</Project>

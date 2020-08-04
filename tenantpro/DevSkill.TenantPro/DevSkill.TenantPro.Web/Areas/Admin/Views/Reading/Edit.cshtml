@@ -1,0 +1,133 @@
+﻿
+@model DevSkill.TenantPro.Web.Areas.Admin.Models.ReadingUpdateModel
+
+@{
+    ViewData["Title"] = "Edit Reading";
+}
+
+@section notification
+{
+    @await Html.PartialAsync("_Notification", Model.Notification)
+}
+@section styles
+{
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+    <link href="~/css/bootstrap.css" rel="stylesheet" />
+}
+
+@section scripts
+{
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+        $(function () {
+            $("#ReadingTakenDate").datepicker();
+
+        });
+    </script>
+    <script>
+        function myFunction() {
+            if ($("#TenantId").val() === "") {
+                $("#TenantIdText").text("please select a tenant!").show().fadeIn(1000);
+                event.preventDefault();
+            }
+            if ($("#ReadingTakenDate").val() === "") {
+                $("#ReadingTakenDateText").text("please give a month!").show().fadeIn(1000);
+                event.preventDefault();
+            }
+            if ($("#PreviousReading").val() === "") {
+                $("#PreviousReadingText").text("please give valid previous reading!").show().fadeIn(1000);
+                event.preventDefault();
+            }
+            if ($("#PresentReading").val() === "") {
+                $("#PresentReadingText").text("please give valid present reading!").show().fadeIn(1000);
+                event.preventDefault();
+            }
+            var present = $("#PresentReading").val();
+            var previous = $("#PreviousReading").val();
+
+            var a = parseInt(present);
+            var b = parseInt(previous);
+            if (a <= b) {
+                $("#PresentReadingText").text("please give valid present reading!").show().fadeIn(1000);
+                event.preventDefault();
+            }
+        }
+    </script>
+    <script>
+        $("#TenantId").change(function () {
+            $("#TenantIdText").hide();
+        });
+        $("#ReadingTakenDate").change(function () {
+            $("#ReadingTakenDateText").hide();
+        });
+        $("#PreviousReading").keypress(function () {
+            $("#PreviousReadingText").hide();
+        });
+        $("#PresentReading").keypress(function () {
+            $("#PresentReadingText").hide();
+        });
+
+    </script>
+
+   
+
+}
+<div class="container-fluid">
+    <div class="row">
+        <!-- left column -->
+        <div class="col-md-6">
+            <!-- general form elements -->
+            <div class="card card-primary">
+                <div class="card-header">
+                    <h3 class="card-title">Edit a Reading</h3>
+                </div>
+                <!-- /.card-header -->
+                <!-- form start -->
+                <form role="form" action="~/admin/Reading/Edit" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" value="@Model.Id" name="Id" />
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label asp-for="Tenant">Tenants</label>
+                            <p id="TenantIdText" class="text-danger"></p>
+                            @Html.DropDownListFor(model => model.TenantId, Model.Tenants, "Select Tenant", new { @class = "form-control", @readonly = "readonly" })
+                            <span asp-validation-for="TenantId" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+
+                            <label asp-for="ReadingTakenDate" class="control-label">Reading Taken Date</label>
+                            <p id="ReadingTakenDateText" class="text-danger"></p>
+                            <input readonly type="text" name="ReadingTakenDate" id="ReadingTakenDate" asp-for="ReadingTakenDate" class="form-control form-control-sm" placeholder="please give contract signing date" value=@Model.ReadingTakenDate.Date />
+                            <span asp-validation-for="ReadingTakenDate" class="=text-danger"></span>
+
+                        </div>
+
+                        <div class="form-group">
+                            <label for="PreviousReading">Previous Reading</label>
+                            <p id="PreviousReadingText" class="text-danger"></p>
+                            <input readonly type="text" class="form-control" name="PreviousReading" id="PreviousReading" value="@Model.PreviousReading" placeholder="Enter previous reading">
+                            <span asp-validation-for="PreviousReading" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="PresentReading">Present Reading</label>
+                            <p id="PresentReadingText" class="text-danger"></p>
+                            <input type="text" class="form-control" name="PresentReading" id="PresentReading" value="@Model.PresentReading" placeholder="Enter present reading">
+                            <span asp-validation-for="PresentReading" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <!-- /.card-body -->
+
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-primary" onclick="myFunction()">Submit</button>
+                    </div>
+                </form>
+            </div>
+            <!-- /.card -->
+
+        </div>
+        <!--/.col (left) -->
+    </div>
+</div>

@@ -1,0 +1,194 @@
+﻿@model DevSkill.TenantPro.Web.Areas.Admin.Models.BillUpdateModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "Billing Modify";
+}
+
+@section notification
+{
+    @await Html.PartialAsync("_Notification", Model.Notification)
+}
+
+@section scripts{
+
+    <script>
+        function isNullOrWhiteSpace(str) {
+            return str === null || str.match(/^ *$/) !== null;
+        }
+
+        function myFunction() {
+            if (isNullOrWhiteSpace($("#TenantId").val())) {
+                $("#tenantValidation").text("please select a tenant!").show().fadeIn(1000);
+                event.preventDefault();
+            }
+            if (isNullOrWhiteSpace($("#Month").val())) {
+                $("#monthValidation").text("please give a month!").show().fadeIn(1000);
+                event.preventDefault();
+            }
+            if (isNullOrWhiteSpace($("#DescoBillOfThisMonth").val())) {
+                $("#descoBillValidation").text("please Enter Desco Bill Of this month").show().fadeIn(1000);
+                event.preventDefault();
+            }
+            if (isNullOrWhiteSpace($("#TotalUnitLocal").val())) {
+                $("#totalUnitValidation").text("please Enter Total Unit Local ").show().fadeIn(1000);
+                event.preventDefault();
+            }
+
+
+        }
+
+
+
+        //$('#myform').on('clsick', '.popup', function (event) {
+        //    var id = $(this).data("id");
+        //    var modal = $("#modal-default");
+        //    var e, r, s;
+        //    modal.find('.modal-body p').text('Please select the bill type you want to generate.');
+        //    $("#billId").val(id);
+        //    modal.modal('show');
+
+        //});
+
+        $("#editButton").click(function () {
+            if ($("#DescoBillOfThisMonth").val() === "" || $("#TotalUnitLocal").val() === "") {
+                //  alert($("#DescoBillOfThisMonth").val()+ "hi"+ $("#TotalUnitLocal").val());
+                if ($("#DescoBillOfThisMonth").val() === "") {
+                    document.getElementById("desco").textContent = "desco bill is missing";
+                }
+                if ($("#TotalUnitLocal").val() === "") {
+                    document.getElementById("localunit").textContent = "local unit price is missing";
+                }
+                $('#editButtonforSubmit').prop('disabled', true);
+            }
+            else {
+                 $('#editButtonforSubmit').prop('disabled', false);
+            }
+            //$("#myform").submit();
+        });
+
+
+        $("#editButtonforSubmit").click(function () {
+            //if ($("#DescoBillOfThisMonth").val() === "" || $("#TotalUnitLocal").val() === "") {
+            //    //  alert($("#DescoBillOfThisMonth").val()+ "hi"+ $("#TotalUnitLocal").val());
+            //    if ($("#DescoBillOfThisMonth").val() === "") {
+            //        document.getElementById("desco").textContent = "desco bill is missing";
+            //    }
+            //    if ($("#TotalUnitLocal").val() === "") {
+            //        document.getElementById("localunit").textContent = "local unit price is missing";
+            //    }
+            //    $('#editButtonforSubmit').prop('disabled', true);
+            //}
+            //else {
+            //     $('#editButtonforSubmit').prop('disabled', false);
+            //}
+            $("#myform").submit();
+        });
+    </script>
+}
+
+
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- left column -->
+        <div class="col-md-6">
+            <!-- general form elements -->
+            <div class="card card-info">
+                <div class="card-header">
+                    <h3 class="card-title">Edit Billing Info</h3>
+                </div>
+                <!-- /.card-header -->
+                <form role="form" id="myform" action="~/Admin/Bill/Edit" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" value="@Model.Id" name="Id" />
+
+                    <div class="card-body">
+
+                        <div class="form-group col-md-8">
+                            <label asp-for="Month" class="control-label">Month Name </label>
+                            <p id="monthValidation" class="text-danger"></p>
+                            <input readonly value="@Model.Month" name="Month" class="form-control form-control-sm" style="width: 100%;">
+                        </div>
+
+                        <div class="form-group col-md-8">
+                            <label asp-for="Year" class="control-label">Year </label>
+                            <input readonly name="Year" value="@Model.Year" class="form-control form-control-sm" style="width: 100%;">
+                        </div>
+                        <div class="form-group col-md-8 ">
+                            <label for="DescoBillOfThisMonth">Enter Desco Bill Of This Month</label>
+                            <p id="descoBillValidation" class="text-danger"></p>
+                            <input value="@Model.DescoBillOfThisMonth" type="text" class="form-control" name="DescoBillOfThisMonth" id="DescoBillOfThisMonth" placeholder="Enter Desco Bill">
+                            <span asp-validation-for="DescoBillOfThisMonth" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-8">
+                            <label for="TotalUnitLocal">Total Net Unit Local </label>
+                            <input type="text" class="form-control" name="TotalUnitLocal" id="TotalUnitLocal" value="@Model.TotalUnitLocal" placeholder="Enter Total Unit Local">
+                            
+                        </div>
+                    </div>
+
+                    <div class="card-footer">
+                        @*<button type="button" class="btn btn-primary popup" id="test" onclick="myFunction()">Submit</button>*@
+                        <button type="button" style="width: 70px;" class="btn btn-primary"  data-toggle="modal" data-target="#modal-default">Edit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="modal fade" id="modal-default">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Edit</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <p>Do you want to edit bill?&hellip;</p>
+
+
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" id="editButton" data-toggle="modal" data-dismiss="modal" data-target="#modal-default2" class="btn btn-danger">Yes, Edit!</button>
+
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+<div class="modal fade" id="modal-default2">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Edit</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <p>Really,Do you want to edit?&hellip;</p>
+                <p class="text-danger" id="desco"></p>
+                <p class="text-danger" id="localunit"></p>
+
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" id="editButtonforSubmit" class="btn btn-danger">Yes, Edit!</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->

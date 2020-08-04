@@ -1,0 +1,250 @@
+﻿
+@model DevSkill.TenantPro.Web.Areas.Admin.Models.ReadingViewModel
+
+@{
+    ViewData["Title"] = "Readings";
+}
+
+@section styles
+{
+    <!-- DataTables -->
+    <link rel="stylesheet" href="/admin/plugins/datatables-bs4/css/dataTables.bootstrap4.css">
+    <link href="~/admin/plugins/select2/css/select2.min.css" rel="stylesheet" />
+
+}
+
+@section scripts
+{
+    <script src="/admin/plugins/datatables/jquery.dataTables.js"></script>
+    <script src="/admin/plugins/datatables-bs4/js/dataTables.bootstrap4.js"></script>
+    <script src="~/admin/plugins/select2/js/select2.full.min.js"></script>
+    <script>
+        $(function () {
+
+            $('.select2').select2();
+            $(".js-example-tokenizer").select2({
+                tags: false
+            })
+            $(document).ready(function () {
+                $('.selection').removeAttr('multiple');
+                $('.selection').val("");
+            });
+
+        });
+    </script>
+
+    <script>
+        var parameter = null;
+
+        $(function () {
+
+            $('#ReadingTable').DataTable({
+                "processing": true,
+                "serverSide": true,
+                "ajax": "/Admin/Reading/getreadings",
+
+                "columnDefs": [
+
+                    {
+                        "orderable": false,
+                        "targets": 7,
+                        "render": function (data, type, row) {
+                            return `
+                                        <button type="submit" class="btn btn-info btn-sm" style="width: 75px;height:33px;" onclick="window.location.href='/Admin/Reading/edit/${data}'" value='${data}'>
+                                                <i class="fas fa-pencil-alt">
+                                                </i>
+                                                Edit </a>
+                                            </button >
+                                          </button>
+                                            `;
+
+                        }
+                    }
+                ]
+            });
+        });
+        $('.dataTables_filter').hide();
+
+        $('#ReadingTable').on('click', '.bill', function (event) {
+            var id = $(this).data("id");
+            var modal = $("#modal-default2");
+            var e, r, s;
+            modal.find('.modal-body p').text('Please select the bill type you want to generate.');
+            $("#billId").val(id);
+            modal.modal('show');
+
+        });
+
+        $("#billButton").click(function () {
+
+            $("#billForm").submit();
+        });
+
+
+        $(document).ready(function () {
+            var table = $("#ReadingTable").DataTable();
+
+            $("#si").change(function () {
+                console.log('Groing for folter : ' + this.value);
+                var g = $('input[type="text"]').val();
+                var id = $('#dt option[value= "' + g + '" ]').attr('id');
+                table.search(id).draw();
+            });
+
+        });
+        $(document).ready(function () {
+
+            $("span").removeClass('select2-selection__rendered');
+            $("#ReadingTable_filter").hide();
+
+        });
+
+    </script>
+    <script>
+        $(function () {
+            $('.date-picker').datepicker({
+                changeMonth: true,
+                changeYear: true,
+                showButtonPanel: true,
+                dateFormat: 'MM yy',
+                onClose: function (dateText, inst) {
+                    var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
+                    var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+                    $(this).datepicker('setDate', new Date(year, month, 1));
+                }
+            });
+        });
+    </script>
+
+    <script>
+        document.getElementById('electricityCheckBox').checked = true;
+        document.getElementById('rentCheckBox').checked = true;
+        document.getElementById('serviceCheckBox').checked = true;
+
+        var checkBoxes = $('form .checkBoxDisable');
+          checkBoxes.change(function () {
+          $('#billButton').prop('disabled', checkBoxes.filter(':checked').length < 1);
+          });
+        $('form .checkBoxDisable').change();
+
+    </script>
+}
+
+@section notification
+{
+    @await Html.PartialAsync("_Notification", Model.Notification)
+}
+<h3>Readings</h3>
+<div class="row">
+    <div class="col-12">
+
+        <div class="card">
+
+            <div class="row p-5">
+                <div class="col-sm-3 text-right">
+                    <label class="ml-5 text-right">Search By Tenant Name</label>
+                </div>
+                <div class="col-sm-4">
+                    <input type="text" list="dt" id="si" autocomplete="off" style="min-width:400px;">
+                    <datalist id="dt">
+                        @foreach (var item in Model.TenantList)
+                        {
+                            <option id="@item.Id" value="@item.Name"></option>
+
+                        }
+                    </datalist>
+                </div>
+            </div>
+
+
+
+            <!-- /.card-header -->
+            <div class="card-body">
+                <table id="ReadingTable" class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Tenant Name</th>
+                            <th>Month-Year</th>
+                            <th>Previous Reading</th>
+                            <th>Present Reading</th>
+                            @*<th>Day OffSet</th>*@
+                            <th>Net Unit</th>
+                            <th>Per Unit Price</th>
+                            <th>Bill</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <!-- /.card-body -->
+        </div>
+        <!-- /.card -->
+    </div>
+    <!-- /.col -->
+</div>
+<!-- /.row -->
+
+<div class="modal fade" id="modal-default2">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Generate Bill</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>One fine body&hellip;</p>
+                <form id="billForm" action="/Admin/Reading/GenerateBill" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="billId" name="id" />
+
+                    <table class="table table-borderless ">
+                        <tbody>
+                            <tr>
+                                <td width="150">
+                                    <label for="ElectricityBill"> Electricity Bill</label>
+                                </td>
+                                <td>
+                                    @Html.CheckBoxFor(m => m.ElectricityBill, htmlAttributes: new { @class = "checkBoxDisable", @id = "electricityCheckBox", @autocomplete = "off" })
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label for="Rent"> Rent </label>
+                                </td>
+                                <td>
+                                    @Html.CheckBoxFor(m => m.Rent, htmlAttributes: new { @class = "checkBoxDisable", @id = "rentCheckBox", @autocomplete = "off" })
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label for="Service"> Charges</label>
+                                </td>
+                                <td>
+                                    @Html.CheckBoxFor(m => m.Service, htmlAttributes: new { @class = "checkBoxDisable", @id = "serviceCheckBox", @autocomplete = "off" })
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label for="startDate">Date :</label>
+                                </td>
+                                <td>
+                                    <input name="startDate" id="startDate" class="date-picker" />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </form>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button id="billButton" class="btn btn-warning"><i class="fas fa-print pr-2"></i>Print</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->

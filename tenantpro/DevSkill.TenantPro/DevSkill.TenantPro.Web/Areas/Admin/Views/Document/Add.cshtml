@@ -1,0 +1,243 @@
+﻿@model DevSkill.TenantPro.Web.Areas.Admin.Models.DocumentUpdateModel
+@{
+    ViewData["Title"] = "Add";
+}
+
+@section styles
+{
+    <style>
+        .ui-autocomplete-loading {
+            background: #000000 no-repeat 95%;
+            background-image: url('../../Content/assets/images/ui-anim.gif');
+        }
+    </style>
+    <link href="~/css/bootstrap.css" rel="stylesheet" />
+}
+
+@section scripts
+{
+    <script src="~/lib/jquery/jquery.js"></script>
+   
+    @*Start File Validation Check JQUERY *@
+
+    <script>
+        Filevalidation = () => {
+            var num = $('.clonedInputTripExp').length;
+            newNum = new Number(num);
+
+            const fi = document.getElementById('ID' + newNum + 'Description');
+            //To check files in 2nd row  -  alert(fi.files[1].name)
+            
+            // Check if any file is selected.
+            if (fi.files.length > 0) {
+                for (const i = 0; i <= fi.files.length - 1; i++) {
+                    
+                    const fsize = fi.files.item(i).size;
+                    const file = Math.round((fsize / 1024));
+
+                    var ext = $("#ID" + newNum + "Description").val().toLowerCase().split('.').pop();
+
+                    var fileExtension = ['jpeg', 'jpg', 'png', 'pdf'];
+
+                    if (!fileExtension.includes(ext)) {
+                        alert("Only PDF, png , JPG, JPEG File is Allowed To Upload")
+                        location.reload();
+                    }
+                    // The size of the file.
+                    if (file >= 10240) {
+                        alert("File too Big, please select a file less than 1mb");
+                        location.reload();
+                    } else {
+                        document.getElementById('size').innerHTML = '<b>'
+                            + file + '</b> KB';
+                    }
+                }
+            }
+        }
+    </script>
+
+    @*End File Validation Check JQUERY*@
+
+    @*Start Add , Remove Row Dynamically  *@
+
+    <script>
+        @*START Jquery Add row for product Feature*@
+
+       $('#btnAddTripExp').on('click', function () {
+
+        var num = $('.clonedInputTripExp').length,
+
+            newNum = new Number(num + 1),
+            newRow = new Number(num),
+            newElem = $('#entryTripExp' + num).clone().attr('id', 'entryTripExp' + newNum).fadeIn('slow');
+
+        var newIda = $('#entryTripExp' + num).find('.Sl').html(),
+            newId = parseInt(newIda) + 1;
+        newElem.find('.Name').parent().attr('for', 'ID' + newId + 'Name');
+        newElem.find('.Name').attr('id', 'ID' + newId + 'Name').val('').attr('name', 'Documents[' + newIda + '].DocumentType').val('');
+
+        newElem.find('.Description').parent().attr('for', 'ID' + newId + 'Description');
+        newElem.find('.Description').attr('id', 'ID' + newId + 'Description').val('').attr('name','Files[' + newIda + '].FilesInfo').val('');
+        $('#entryTripExp' + num).after(newElem);
+        $('#entryTripExp' + newNum).focus();
+
+        $('#btnDelTripExp').attr('disabled', false);
+
+        newElem.find('.Sl').html(newNum);
+    });
+
+
+    $(document).on('click', '.btnDelTripExp', function () {
+
+        event.preventDefault();
+
+        var num = $('.clonedInputTripExp').length,
+
+            newNum = new Number(num);
+
+        if (newNum == 1) {
+            $('.btnDelTripExp').attr('disabled', true);
+            alert("Minimum fill one row!!");
+        }
+        else {
+            var tr = $(this).closest('tr');
+            tr.addClass("bg-danger");
+            tr.fadeOut(500, function () {
+                var table = tr.closest('table');
+                tr.remove();
+                updateIndexesExp(table);
+            });
+        }
+
+    });
+        // Update Clond Input fields Indexes
+    function updateIndexesExp(table) {
+
+        table.find("tr:gt(0)").each(function (i, row) {
+            $(row).find("td:first").html(i + 1);
+            var id = i + 1;
+            $(row).find('.Description').attr('name', 'Files[' + id + '].FilesInfo');
+            $(row).find('.Name').attr('name', 'Documents[' + id + '].DocumentType');
+            $(row).attr('id', 'entryTripExp' + id);
+
+            $(row).find('input, select').each(function (j, input) {
+
+                var id = input.name.match(/\d+/);
+                if (id != null && id.length && id.length == 1) {
+                    var attr = $(input).attr("name");
+                    var newName = attr.replace(attr.match(/\d+/), i);
+                    $(input).attr("name", newName);
+                }
+            });
+
+
+        });
+    }
+        @* END Jquery Add row for product Feature*@
+    </script>
+
+    @*End  Add , Remove Row Dynamically *@
+}
+
+@section Notification
+{
+    @await Html.PartialAsync("_Notification", Model.Notification)
+}
+
+<div style="background-color:aliceblue" class="card">
+    <form enctype="multipart/form-data" asp-controller="Document" asp-action="Add" method="post" class="form-horizontal">
+        @Html.AntiForgeryToken()
+        <!--Document Start From Here-->
+
+        <div class="m-3 form-row card-body">
+            <div class="panel-body w-100">
+
+                <div class="col-md-12 searched-content">
+                    <div class="row">
+                        <div class="form-group col-md-12">
+                            <h4 class="text-center" style="color: #fa5526; font-weight: bold">Upload Tenant Documents</h4>
+                            <hr />
+                        </div>
+
+                        <div class="form-group col-md-3">
+
+                        </div>
+                        <label asp-for="TenantId" class="control-label">Select a Tenant </label>
+                        <div class="form-group col-md-4 text-center">
+                            <select required name="TenantId" class="form-control form-control-sm select2" style="width: 100%;">
+                                <option disabled selected value=""> Please Choose a Tenant </option>
+                                @foreach (var item in ViewBag.Tenants)
+                                {
+                                    <option value="@item.Id">@item.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    
+                </div>
+                    <div class="row">
+                        <table class="table table-bordered table-striped table-condensed mb-none" id="tblExpenseCount">
+                            <thead>
+                                <tr>
+                                    <th>#SL</th>
+                                    <th>Document Type</th>
+                                    <th>Document File </th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    int x = 1;
+                                }
+                                <tr class="clonedInputTripExp" id="entryTripExp@{@x}">
+                                    <td class="Sl">1</td>
+                                    <td>
+                                        <select name="Documents[0].DocumentType" class="Name form-control form-control-sm select2" style="width: 100%;">
+                                            <option disabled selected> Please Select a Document Type</option>
+                                            @foreach (var item in ViewBag.DocumentType)
+                                            {
+                                                <option value="@item">@item</option>
+                                            }
+                                        </select>
+                                    </td>
+
+                                    <td>
+                                        <dl>
+                                            <dd>
+                                                <input class="form-control input-sm Description" id="ID1Description" onchange="Filevalidation()" name="Files[0].FilesInfo" type="file" required>
+                                            </dd>
+                                        </dl>
+                                    </td>
+
+                                    <td class="text-center">
+                                        <a href="javascript:void(0)" class="btnDelTripExp" style="cursor: pointer;">
+                                            X
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="float-left">
+                                <a asp-area="Admin" href="/Admin/Tenant/Index" class="btn btn-outline-info pull-right">Back To List</a>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            
+                        </div>
+                        <div class="col-md-4" style="text-align:right">
+                            <button class="btn btn-primary input-sm" type="button" name="btnAddTripExp" id="btnAddTripExp">
+                                <i class="fa fa-plus"></i> Add More Rows
+                            </button>
+                            <button type="submit" class="btn btn-success">Submit</button>
+                        </div>
+                    </div>
+               
+            </div>
+            </div>
+        <!--Document End Here-->
+    </form>
+</div>

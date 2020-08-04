@@ -1,0 +1,279 @@
+﻿
+@model DevSkill.TenantPro.Web.Areas.Admin.Models.TenantViewModel
+
+@using DevSkill.TenantPro.Billing.Services;
+
+@inject IReadingService _readingService;
+
+
+@{
+    ViewData["Title"] = "BulkPrinting";
+}
+
+<h1>BulkPrinting</h1>
+
+
+
+
+@section styles
+{
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="/admin/plugins/fontawesome-free/css/all.min.css">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <!-- Google Font: Source Sans Pro -->
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+}
+
+
+@section scripts
+{
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            document.title = "Bulk_Printing _ @Model.ReadingTakenDate";
+           window.print();
+        });
+
+
+    </script>
+}
+
+
+@{var c = 0;
+    decimal total = 0;}
+
+@foreach (var billlist in Model.Printings)
+{
+
+
+    <div class="wrapper" id="MyDiv">
+        <section class="invoice card">
+            <div class="row">
+                <div class="col-sm-12">
+                    <small class="float-right">Printing Time : @DateTime.Now</small>
+                </div>
+            </div>
+            <div class="row invoice-info">
+                <div class="col-sm-4 m-3 invoice-col">
+                    <br /><br />
+                    <h2>
+                        <i class="fas fa-globe"></i> Razia Plaza
+                    </h2>
+                    <strong></strong>
+                    <p class="pl-4">
+                        184, Senpara Parbata,<br>
+                        Mirpur, Dhaka  - 1216<br>
+                        razia.plaza@gmail.com<br>
+                    </p>
+                </div>
+                <!-- /.col -->
+                <div class="col-sm-3 invoice-col">
+
+                </div>
+                <!-- /.col -->
+                <div class="col-sm-4 float-right invoice-col">
+                    <br>
+                    <br>
+                    <h3><b>Tenant Information</b></h3>
+                    <b>
+                        <strong>
+                            Name : @billlist.Tenant.Name  <br>
+                            Holding : @billlist.Tenant.Holding
+                        </strong>
+                    </b><br />
+                    <hr />
+                    <b><i class="fa fa-book-reader">  Contact Person : </i></b>
+                    @foreach (var item in billlist.Tenant.ContactPersons)
+                    {
+                        <h6 class="pl-4">
+                            Name : @item.Name
+                        </h6>
+                        <h6 class="pl-4">
+                            Mobile Number :  @item.ContractNumber
+                        </h6>
+                    }
+                </div>
+                <!-- /.col -->
+            </div>
+            <!-- Table row -->
+            <div class="row card-body">
+                <div class="col-12 table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Serial#</th>
+                                <th>Bill-Type</th>
+                                <th>Month - Year</th>
+                                <th>Item</th>
+                                <th>Bill Amount</th>
+                            </tr>
+                        </thead>
+
+
+                        <tbody>
+                            @{var x = 0;}
+
+                            @foreach (var item in billlist.BillFormat)
+                            {
+
+                                @if (item == "ElectricityBill" && _readingService.GetReadingOfTenant(billlist.Tenant.Id, Model.ReadingTakenDate.AddMonths(-1)) != null)
+                                {
+                                    var reading = _readingService.GetReadingOfTenant(billlist.Tenant.Id, Model.ReadingTakenDate.AddMonths(-1));
+                                    <tr>
+                                        <td>@{x++;}<p>@x</p></td>
+                                        <td>Electricity Bill</td>
+                                        <td> @Model.ReadingTakenDate.AddMonths(-1).ToString("MMMM"),@Model.ReadingTakenDate.Year </td>
+                                        <td>
+                                            <div class="list-group">
+                                                Previous Reading :@reading.PreviousReading <br />
+                                                Present Reading : @reading.PresentReading <br />
+                                                Net Unit : @reading.NetUnit.ToString("0.00") <br />
+                                                Per Unit Price : @reading.PerUnitPrice.ToString("0.00") <br />
+
+                                            </div>
+                                        </td>
+                                        <td>
+                                            @reading.TotalBillofThisMonth.ToString("0.00")
+                                            @{total = total + reading.TotalBillofThisMonth;}
+                                        </td>
+                                    </tr>
+                                }
+                                else if (item == "ElectricityBill" && _readingService.GetReadingOfTenant(billlist.Tenant.Id, Model.ReadingTakenDate.AddMonths(-1)) == null)
+                                {
+                                    var reading = _readingService.GetReadingOfTenant(billlist.Tenant.Id, Model.ReadingTakenDate.AddMonths(-1));
+                                    <tr>
+                                        <td>@{x++;}<p>@x</p></td>
+                                        <td>Electricity Bill</td>
+                                        <td> @Model.ReadingTakenDate.AddMonths(-1).ToString("MMMM"),@Model.ReadingTakenDate.Year </td>
+                                        <td>
+                                            <div class="list-group">
+                                                <p class="text-danger">No electricity bill found of this month</p>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            
+                                        </td>
+                                    </tr>
+                                }
+
+                                @if (item == "Rent")
+                                {
+                                    <tr>
+                                        <td>@{x++;}<p>@x</p></td>
+                                        <td>House Rent</td>
+                                        <td>
+                                            @if (billlist.Tenant.PaymentType.ToString() == "Prepaid")
+                                            {
+                                                @Model.ReadingTakenDate.ToString("MMMM")<span>,</span> @Model.ReadingTakenDate.Year
+                                            }
+                                            else
+                                            {
+                                                @Model.ReadingTakenDate.AddMonths(-1).ToString("MMMM")<span>,</span> @Model.ReadingTakenDate.Year
+                                            }
+                                        </td>
+
+                                        <td></td>
+                                        <td>
+                                            @billlist.Tenant.Rent Tk
+                                            @{total = total + billlist.Tenant.Rent;}
+                                        </td>
+                                    </tr>
+                                }
+                                @if (item == "WaterBill")
+                                {
+                                    <tr>
+                                        <td>@{x++;}<p>@x</p></td>
+                                        <td>Water-Bill </td>
+                                        <td>
+                                            @if (billlist.Tenant.PaymentType.ToString() == "Prepaid")
+                                            {
+                                                @Model.ReadingTakenDate.ToString("MMMM")<span>,</span> @Model.ReadingTakenDate.Year
+                                            }
+                                            else
+                                            {
+                                                @Model.ReadingTakenDate.AddMonths(-1).ToString("MMMM")<span>,</span> @Model.ReadingTakenDate.Year
+                                            }
+                                        </td>
+
+                                        <td>
+                                        </td>
+                                        <td>
+                                            @billlist.Tenant.WaterBill TK <br />
+                                            @{total = total + billlist.Tenant.WaterBill;}
+                                        </td>
+                                    </tr>
+                                }
+                                @if (item == "ServiceCharge")
+                                {
+                                    <tr>
+                                        <td>@{x++;}<p>@x</p></td>
+                                        <td>Service Charge</td>
+                                        <td>
+                                            @if (billlist.Tenant.PaymentType.ToString() == "Prepaid")
+                                            {
+                                                @Model.ReadingTakenDate.ToString("MMMM")<span>,</span> @Model.ReadingTakenDate.Year
+                                            }
+                                            else
+                                            {
+                                                @Model.ReadingTakenDate.AddMonths(-1).ToString("MMMM")<span>,</span> @Model.ReadingTakenDate.Year
+                                            }
+                                        </td>
+
+                                        <td></td>
+                                        <td>
+                                            @billlist.Tenant.ServiceCharge Tk
+                                            @{total = total + billlist.Tenant.ServiceCharge;}
+                                        </td>
+                                    </tr>
+                                }
+                                @if (item == "GasBill")
+                                {
+                                    <tr>
+                                        <td>@{x++;}<p>@x</p></td>
+                                        <td>Gas Bill </td>
+                                        <td>
+                                            @Model.ReadingTakenDate.AddMonths(-1).ToString("MMMM")<span>,</span> @Model.ReadingTakenDate.Year
+                                            
+                                        </td>
+
+                                        <td> </td>
+                                        <td>
+                                            @billlist.Tenant.GasBill Tk
+                                            @{total = total + billlist.Tenant.GasBill;}
+                                        </td>
+                                    </tr>
+                                }
+
+                            }
+
+                        </tbody>
+
+
+                        <tfoot>
+                            <tr>
+                                <td>
+                                </td>
+                                <td></td>
+                                <td></td>
+                                <td align="right"><font size="5">Total :</font></td>
+                                <td> <font size="5">@total.ToString("0.00") Tk</font></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <!-- /.col -->
+            </div>
+            <!-- /.row -->
+            <!-- /.col -->
+
+        </section>
+    </div>
+    @if (c < Model.Printings.Count - 1)
+    {<p style="page-break-after: always"></p>}
+
+    { c = c + 1; }
+    total = 0;
+}
+
+
